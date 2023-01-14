@@ -190,7 +190,7 @@ function formatChanged() {
 
 function setOutputText(text) {
   outputTextEl.value = text || "No LWO file loaded";
-  setExportEnabled(true);
+  setExportEnabled(text ? true : false);
 }
 
 function setExportEnabled(enabled) {
