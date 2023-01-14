@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>NL2 LWO to CSV converter</title>
+  <meta name="description" content="Converts NoLimits2 STANDARD LWO files to CSV point coordinates">
+  <meta name="author" content="TeamBergerhealer">
+
+  <meta property="og:title" content="NL2 LWO to CSV converter">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nl2.traincarts.net">
+  <meta property="og:description" content="Converts NoLimits2 STANDARD LWO files to CSV point coordinates">
+  <meta property="og:image" content="banner.png">
+
+  <link rel="icon" href="favicon.ico">
+
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+  <div class="content">
+    <div class="content-row">
+      <div class="box input-box">
+        <div id="input-dropzone">
+          <div class="input-dropzone-content">
+            <img class="dropicon" src="drop.png"></img>
+            <p class="droptext"><a onclick="showDropDialog()" href="javascript:void(0);"><b>Choose a .LWO file</b></a><br><i>or drag one here</i></p>
+            <p id="input-info"></p>
+            <p id="input-error-msg"></p>
+          </div>
+        </div>
+
+        <input id="inputFile", name="inputFile" type="file" accept=".lwo"
+               style="position: fixed; top: -100%; visibility: hidden" />
+
+      </div>
+
+      <div class="box control-box">
+        <div style="position: relative; width: 100%; height: 100%;"> <!--css sucks-->
+        <div class="help-box">
+          <div><b>Export .LWO in NoLimits 2:</b></div>
+          <ol>
+            <li>Go to <span class="highlight">Advanced</span> > <span class="highlight">Light Pattern Creator</span></li>
+            <li>Check <span class="highlight">Generate Object</span> and press <span class="highlight">Generate</span></li>
+            <li>Select the folder to save the files to</li>
+            <li>Explore the folder and drag the <span class="highlight">.LWO</span> file onto this page</li>
+          </ol>
+        </div>
+          <div class="control-box-inner">
+            <div class="control-box-area node-distance-area">
+              <span class="not-selectable">Node-to-node distance:</span>
+              <div>
+                <input type="checkbox" id="default-node-distance" name="default-node-distance" checked />
+                <label for="default-node-distance" style="margin-right: 0.5em;">Default</label>
+                <input type="number" id="node-distance" name="node-distance"
+                       min="0.1" max="100.0" step="0.1" value="0.5" disabled />
+                <span class="not-selectable">m</span>
+              </div>
+            </div>
+            <div class="control-box-area format-area">
+              <span class="not-selectable">Format:</span>
+              <div>
+                <input type="radio" id="format-nl2" name="format" onchange="formatChanged()" value="nl" checked />
+                <label for="format-nl2">NoLimits 2</label>
+              </div>
+              <div>
+                <input type="radio" id="format-tcc" name="format" onchange="formatChanged()" value="tcc" />
+                <label for="format-tcc">TC-Coasters</label>
+              </div>
+            </div>
+            <div id="upload-area">
+              <div id="upload-fold-container">
+                <button id="save-btn" onclick="saveButtonClick()" title="Save as File" disabled>Save</button>
+                <button id="upload-btn" onclick="uploadButtonClick()" title="Upload to paste server" disabled>Upload to Pastebin</button>
+                <img id="upload-status-icon" src="spinner.gif" />
+                <input id="upload-result" name="upload-result" type="text" onClick="this.select();" readonly />
+                <button id="upload-settings" onclick="openPasteServerDialog();" title="Upload Settings"><b>&#x2699;</b></button>
+                <div id="upload-copy-popup">Copied</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-row output-row">
+      <div class="box output-box">
+        <textarea id="output-text" name="output-text" readonly>No LWO file loaded</textarea>
+      </div>
+    </div>
+  </div>
+
+  <div id="paste-server-bg">
+    <div class="box paste-server-box">
+      <p style="margin: 0px 0px;">Paste Server:</p>
+      <input id="paste-server-name" name="paste-server-name" type="text" />
+      <div style="text-align: right;">
+        <button id="paste-server-ok-btn" onclick="closePasteServerDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/FileSaver.min.js"></script>
+  <script src="js/csv.js"></script>
+  <script src="js/primitives.js"></script>
+  <script src="js/quaternion.js"></script>
+  <script src="js/lwo.js"></script>
+  <script src="js/hastebin.js"></script>
+  <script src="js/gui.js"></script>
+  <script>loadSettings();</script>
+</body>
+</html>

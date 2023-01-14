@@ -1,0 +1,323 @@
+html, body {
+  box-sizing: border-box;
+  min-height: 100%;
+  background: #fff;
+  color: #000;
+}
+
+body {
+  font-size: 1.4rem;
+  text-rendering: optimizeLegibility;
+  background-color: #747474;
+}
+
+body.waiting * {
+    cursor: progress;
+}
+
+body, ul, ol, dl {
+  margin: 0;
+}
+
+textarea, button, input {
+  font-size: 1rem;
+}
+
+p, .not-selectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.content {
+  display: flex;
+  flex-flow: column;
+  max-width: 60em;
+  min-height: 100vh;
+  margin: auto;
+}
+
+.content-row {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 6em;
+}
+
+.box {
+  border: 2px solid black;
+  border-radius: 15px;
+  margin: 0.5em 0.5em 0.5em 0.5em;
+  padding: 0.8em 0.8em 0.8em 0.8em;
+  min-width: 12em;
+}
+
+.input-box {
+  background-color: #378937;
+  width: 40%;
+  height: 16em;
+  margin-right: 0px;
+}
+
+.control-box {
+  position: relative;
+  flex: auto;
+  background-color: #46829f;
+  right: 0px;
+  height: 16em;
+  min-width: 24em;
+}
+
+.control-box-inner {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-right: 1.5em;
+}
+
+.control-box-area {
+  color: white;
+  margin-bottom: 1em;
+}
+
+.output-row {
+  flex: 1 0 auto;
+}
+
+.output-box {
+  background-color: #8b408b;
+  width: 100%;
+  margin-top: 0;
+  flex: 1 1 auto;
+}
+
+#input-dropzone {
+  position: relative;
+  background-color: #225522;
+  border: 2px solid white;
+  border-radius: 20px;
+  width: 100%;
+  height: 100%;
+
+  outline: 2px dashed #aaaaaa;
+  outline-offset: -10px;
+
+  -webkit-transition: outline-offset .1s linear, background-color .2s linear;
+  transition: outline-offset .1s linear, background-color .2s linear;
+}
+
+.drophover {
+  background-color: #558855 !important;
+  outline-offset: -40px !important;
+}
+
+.input-dropzone-content {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 14em;
+  top: 50%;
+  transform: translateY(-7em);
+  -ms-transform: translateY(-7em);
+  -moz-transform: translateY(-7em);
+  -webkit-transform: translateY(-7em);
+  -o-transform: translateY(-7em);
+}
+
+.input-dropzone-content p {
+  color: white;
+}
+
+.dropicon {
+  position: relative;
+  width: 6em;
+  left: 50%;
+  margin-left: -3em;
+}
+
+.droptext {
+  text-align: center;
+  line-height: 1.5;
+}
+
+.droptext a {
+  color: white;
+}
+
+#input-error-msg {
+  text-align: center;
+  color: red !important;
+}
+
+#input-info {
+  text-align: center;
+  color: #00ffd0;
+}
+
+.error-shake {
+  animation: shake 0.2s;
+  animation-iteration-count: 2;
+}
+
+@keyframes shake {
+  0% { transform: translate(-5px); }
+  33% { transform: translate(0px); }
+  66% { transform: translate(5px); }
+  100% { transform: translate(0px); }
+}
+
+.help-box  {
+  white-space: nowrap;
+  color: white;
+}
+
+.highlight {
+  color: #ffa4a4;
+}
+
+#upload-fold-container {
+  position: relative;
+  width: 0;
+  display: flex;
+  flex-flow: row;
+  align-items: stretch;
+  -webkit-transition: width .25s ease-out;
+  transition: width .25s ease-out;
+}
+
+#upload-status-icon {
+  display: none;
+  min-width: 1em;
+  max-width: 1em;
+  margin-right: 0.5em;
+}
+
+#save-btn {
+  margin-right: 0.5em;
+}
+
+#upload-btn {
+  margin-right: 0.5em;
+  min-width: 10em;
+}
+
+#upload-result {
+  display: none;
+  width: 0;
+  flex: 1 0 auto;
+  margin-right: 0.5em;
+}
+
+.upload-result-url {
+  display: inline-block !important;
+}
+
+.upload-result-error {
+  display: inline-block !important;
+  color: red !important;
+  pointer-events: none;
+}
+
+#upload-copy-popup {
+  display: none;
+  position: absolute;
+  top: 2.1rem;
+  left: 15rem;
+  border-radius: 0.5em;
+  background: #ffecc3;
+  font-size: 0.8rem;
+  padding: 0px 0.25em 0.25em 0.25em;
+  z-index: 2;
+}
+
+/* Lil arrow */
+#upload-copy-popup:before {
+  display: block;
+  content: "";
+  position: relative;
+  bottom: 0.5em;
+  left: 50%;
+  margin-left: -0.25em;
+  border-left: 0.25em solid transparent;
+  border-right: 0.25em solid transparent;
+  border-bottom: 0.5em solid #ffecc3;
+  width: 0;
+  height: 0;
+}
+
+#upload-settings {
+  padding: 0px 0.2em;
+}
+
+#output-text {
+  width: 100%;
+  height: 100%; 
+  box-sizing: border-box;
+  white-space: pre;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  resize: none;
+  font-size: 0.6em;
+  background-color: #6a376a;
+  color: #ffcbcb;
+}
+
+#paste-server-bg {
+  display: none;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,.5);
+  z-index: 10;
+}
+
+.paste-server-bg-shown {
+  display: block !important;
+}
+
+.paste-server-box {
+  position: relative;
+  background-color: #c7c7c7;
+  width: 13em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#paste-server-name {
+  width: 100%;
+  padding: 0px 0px;
+  margin-bottom: 1em;
+}
+
+/* ensures the increment/decrement arrows always display */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* sets hyphenation by default on paragraphs */
+p { 
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+textarea { 
+  resize: vertical;
+}
+
+img { 
+  border: none;
+  max-width: 100%;
+}
