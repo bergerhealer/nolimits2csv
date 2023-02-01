@@ -56,7 +56,7 @@ PasteServer.prototype.can_compress = function(callback) {
   }
 
   this.make_request({method:"GET", path:"capabilities", json:true}, function(capabilities) {
-    callback(capabilities['request-content-encoding' || false]);
+    callback(capabilities['request-content-encoding'] || false);
   }, function() { callback(false); });
 }
 
