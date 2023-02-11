@@ -10,7 +10,7 @@ body {
   text-rendering: optimizeLegibility;
   background-color: #747474;
   overflow-x: hidden;
-  font-family: Times New Roman;
+  font-family: "Times New Roman", Times, serif;
 }
 
 body.waiting * {
