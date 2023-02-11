@@ -31,6 +31,9 @@ pasteServerName.addEventListener("keydown", function (evt) {
     closePasteServerDialog();
 });
 
+const selectedTrackIndex = document.getElementById("selected-track");
+selectedTrackIndex.addEventListener("change", generateCSVText);
+
 const outputTextEl = document.getElementById('output-text');
 
 // Browsers suck what the heck???
@@ -40,14 +43,15 @@ var dragCounter = 0;
 var lwo = null;
 
 // All supported formats
-function CSVGUIFormat(name, create_csv_encoder) {
+function CSVGUIFormat(name, supports_multiple_tracks, create_csv_encoder) {
   this.name = name;
+  this.supports_multiple_tracks = supports_multiple_tracks;
   this.create_csv_encoder = create_csv_encoder;
   this.el = document.getElementById(name);
 }
 const formats = [
-  new CSVGUIFormat('format-nl2', function() { return new NL2CSV(); }),
-  new CSVGUIFormat('format-tcc', function() { return new TCCCSV(); })
+  new CSVGUIFormat('format-nl2', false, function() { return new NL2CSV(); }),
+  new CSVGUIFormat('format-tcc', true, function() { return new TCCCSV(); })
 ];
 
 // All settings that are remembered/restored on refresh
@@ -65,12 +69,7 @@ const settings = [
   {
     name: 'output-format',
     get: function() {
-      for (const format of formats) {
-        if (format.el.checked) {
-          return format.name;
-        }
-      }
-      return "none";
+      return selectedFormat().name;
     },
     set: function(val) {
       for (const format of formats) {
@@ -87,6 +86,15 @@ const settings = [
     set: function(val) { if (val) pasteServerName.value = val; }
   }
 ];
+
+function selectedFormat() {
+  for (const format of formats) {
+    if (format.el.checked) {
+      return format;
+    }
+  }
+  return formats[0];
+}
 
 function loadSettings() {
   for (const setting of settings) {
@@ -152,6 +160,16 @@ function setInputError(message) {
   }
 }
 
+function updateTrackCount() {
+  var track_count = lwo ? lwo.tracks.length : 0;
+  var is_multiple = (track_count > 1);
+  var warningEl = document.getElementById("input-warning-msg");
+  warningEl.style.display = is_multiple ? 'block' : 'none';
+  warningEl.innerText = is_multiple ? ("Contains " + track_count.toString() + " isolated tracks!") : "";
+  var selectBlockEl = document.getElementById("track-selector");
+  selectBlockEl.style.display = (is_multiple && !selectedFormat().supports_multiple_tracks) ? 'inline-block' : 'none';
+}
+
 function inputDragEnterHandler(evt) {
   inputDropzone.classList.add("drophover");
   ++dragCounter;
@@ -185,6 +203,7 @@ function nodeDistanceChanged() {
 
 function formatChanged() {
   saveSettings();
+  updateTrackCount();
   generateCSVText();
 }
 
@@ -201,24 +220,32 @@ function setExportEnabled(enabled) {
 }
 
 function generateCSVText() {
-  if (!lwo) {
+  if (!lwo || lwo.tracks.length == 0) {
     setOutputText(null);
     return;
   }
 
-  var csv = null;
-  for (const format of formats) {
-    if (format.el.checked) {
-      csv = format.create_csv_encoder();
-      break;
+  var selected_format = selectedFormat();
+  if (lwo.tracks.length == 1) {
+    setOutputText(exportTrack(selected_format, lwo.tracks[0]));
+  } else if (selected_format.supports_multiple_tracks) {
+    // Concat all tracks together as one long string
+    setOutputText(lwo.tracks.map(function (c) { return exportTrack(selected_format,c); })
+                            .join('\r\n'));
+  } else {
+    var selected_idx = parseInt(selectedTrackIndex.value) - 1;
+    if (selected_idx < 0 || selected_idx >= lwo.tracks.length) {
+      selected_idx = 0;
     }
+    setOutputText(exportTrack(selected_format, lwo.tracks[selected_idx]));
   }
-  if (!csv)
-    return;
+}
 
+function exportTrack(format, track) {
+  const csv = format.create_csv_encoder();
   if (nodeDistanceDefault.checked) {
     // Output as-is
-    for (const ring of lwo.rings) {
+    for (const ring of track.rings) {
       csv.add(ring.pos(), ring.front(), ring.left(), ring.up());
     }
   } else {
@@ -227,17 +254,17 @@ function generateCSVText() {
     if (isNaN(node_distance))
       throw new Error("NaN node distance");
 
-    const interpolator = lwo.interpolate();
+    const interpolator = track.interpolate();
     const first = interpolator.first;
     csv.add(first.pos, first.front, first.left, first.up);
     for (var next; next = interpolator.next(node_distance);) {
       csv.add(next.pos, next.front, next.left, next.up);
     }
   }
-  if (lwo.looped) {
+  if (track.looped) {
     csv.add_loop();
   }
-  setOutputText(csv.text);
+  return csv.text;
 }
 
 function inputFileChanged(evt) {
@@ -247,11 +274,12 @@ function inputFileChanged(evt) {
 
   const info_el = document.getElementById("input-info");
 
+  lwo = null;
   setInputError("");
+  updateTrackCount();
   setOutputText(null);
   setExportEnabled(false);
   info_el.innerText = "";
-  lwo = null;
 
   // Read the file contents
   var reader = new FileReader();
@@ -268,6 +296,9 @@ function inputFileChanged(evt) {
 
       // Show filename now we know it loaded
       info_el.innerText = 'Loaded [ ' + name + ' ]';
+      selectedTrackIndex.max = lwo.tracks.length;
+      selectedTrackIndex.value = 1;
+      updateTrackCount();
 
       // Generate NoLimits2 CSV
       generateCSVText();

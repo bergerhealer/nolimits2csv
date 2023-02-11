@@ -31,6 +31,7 @@
             <img class="dropicon" src="drop.png"></img>
             <p class="droptext"><a onclick="showDropDialog()" href="javascript:void(0);"><b>Choose a .LWO file</b></a><br><i>or drag one here</i></p>
             <p id="input-info"></p>
+            <p id="input-warning-msg"></p>
             <p id="input-error-msg"></p>
           </div>
         </div>
@@ -67,6 +68,12 @@
               <div>
                 <input type="radio" id="format-nl2" name="format" onchange="formatChanged()" value="nl" checked />
                 <label for="format-nl2">NoLimits 2</label>
+
+                <div id="track-selector">
+                  <label>Track:</label>
+                  <input type="number" id="selected-track" name="selected-track"
+                         min="1" max="100" step="1" value="1" />
+                </div>
               </div>
               <div>
                 <input type="radio" id="format-tcc" name="format" onchange="formatChanged()" value="tcc" />

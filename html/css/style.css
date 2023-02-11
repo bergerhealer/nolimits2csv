@@ -9,6 +9,7 @@ body {
   font-size: 1.4rem;
   text-rendering: optimizeLegibility;
   background-color: #747474;
+  overflow-x: hidden;
 }
 
 body.waiting * {
@@ -152,9 +153,24 @@ p, .not-selectable {
   color: red !important;
 }
 
+#input-warning-msg {
+  display: none;
+  text-align: center;
+  color: yellow !important;
+}
+
 #input-info {
   text-align: center;
   color: #00ffd0;
+}
+
+#track-selector {
+  display: none;
+  padding-left: 2em;
+}
+
+#selected-track {
+  width: 2.5em;
 }
 
 .error-shake {

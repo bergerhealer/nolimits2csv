@@ -3,9 +3,7 @@
  * LWO format gleaned from https://github.com/nangtani/blender-import-lwo/wiki/LWO2-file-format-(2001)
  */
 
-function LWO(data, name) {
-  this.data = data;
-  this.name = name;
+function Track() {
   this.chains = [];
   this.rings = [];
   this.looped = false;
@@ -13,7 +11,7 @@ function LWO(data, name) {
 }
 
 // Starts ring-to-ring interpolation
-LWO.prototype.interpolate = function() {
+Track.prototype.interpolate = function() {
   return new RingInterpolator(this.chains[0]);
 }
 
@@ -23,7 +21,7 @@ LWO.prototype.interpolate = function() {
 //
 // Can change start index to properly validate discovery in the
 // middle of the loop. Generally point 0 is of an end-ring.
-LWO.prototype.decode_rings = function(start_point) {
+Track.prototype.decode_rings = function(start_point) {
   // Ring around the circumference of the square tube the start point is part of
   // Also identifies the next ring in the sequence, and previous if found
   const search_ring_result = start_point.find_ring();
@@ -110,6 +108,12 @@ LWO.prototype.decode_rings = function(start_point) {
   this.chains = chains;
   this.looped = is_looped;
   this.total_length = total_length;
+}
+
+function LWO(data, name) {
+  this.data = data;
+  this.name = name;
+  this.tracks = [];
 }
 
 LWO.prototype.load = function() {
@@ -353,8 +357,8 @@ LWO.prototype.load = function() {
 
   var loopcnt = 0;
   var lastPNTS = null;
-  var start_point = null;
   var unique_points = {};
+  var all_points = [];
   while (pos < endpos) {
     // Read next chunk
     var chunk_tag = read_string(4);
@@ -370,8 +374,8 @@ LWO.prototype.load = function() {
           throw new Error("PNTS chunk size invalid: " + chunk_len);
         }
         lastPNTS = read_points(chunk_len / 12, unique_points);
-        if (start_point == null && lastPNTS && lastPNTS.length > 0) {
-          start_point = lastPNTS[0];
+        if (lastPNTS && lastPNTS.length > 0) {
+          all_points = all_points.concat(lastPNTS)
         }
         break;
     case 'VMAP':
@@ -394,8 +398,27 @@ LWO.prototype.load = function() {
       throw new Error("Too many loops");
   }
 
-  if (!start_point)
+  if (all_points.length == 0)
     throw new Error("No points decoded");
 
-  this.decode_rings(start_point);
+  // Identify un-connected island groups of tracks in the results
+  // Start with the start point, then find a point that hasn't been
+  // visited yet for optional additional tracks.
+  this.tracks = [];
+  visited_points = new Set();
+  for (const start_point of all_points) {
+    if (visited_points.has(start_point.xyz)) {
+      continue;
+    }
+
+    const track = new Track();
+    track.decode_rings(start_point);
+    this.tracks.push(track);
+
+    for (const ring of track.rings) {
+      for (const pt of ring.points) {
+        visited_points.add(pt.xyz);
+      }
+    }
+  }
 }
